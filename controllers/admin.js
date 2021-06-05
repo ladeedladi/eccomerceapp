@@ -90,8 +90,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-
-  req.user.getProducts(products => {
+  console.log('inside products')
+  req.user.getProducts().then(products => {
   // Product.findAll().then(products => {
     res.render('admin/products', {
       prods: products,
@@ -110,9 +110,10 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.delete
-  Product.destroy({where: { id : prodId }});
-  res.redirect('/admin/products');
+  Product.destroy({where: { id : prodId }}).then(()=> {
+    res.redirect('/admin/products');
+  })
+  .catch(err => console.log(err))
 };
 
 exports.products = products;

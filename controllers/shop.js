@@ -5,11 +5,12 @@ const admin = require('./admin')
 exports.getProducts = (req, res, next) => {
   // Product.fetchAll(products => {
     Product.findAll().then(products => {
-      res.render('shop/product-list', {
-        prods: products,
-        pageTitle: 'All Products',
-        path: '/products'
-      });
+      res.json(products);
+      // res.render('shop/product-list', {
+      //   prods: products,
+      //   pageTitle: 'All Products',
+      //   path: '/products'
+      // });
     })
   // });
 };
@@ -66,17 +67,19 @@ exports.getCart = (req, res, next) => {
     //       cartProducts.push({ productData: product, qty: cartProductData.qty });
     //     }
     //   }
-      res.render('shop/cart', {
-        path: '/cart',
-        pageTitle: 'Your Cart',
-        products: cartProducts
-      });
+      res.json(cartProducts)
+      // res.render('shop/cart', {
+      //   path: '/cart',
+      //   pageTitle: 'Your Cart',
+      //   products: cartProducts
+      // });
     });
   });
 };
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
+  console.log('prodId >>>>>>>>.', JSON.stringify(req.body))
   let fetchedCart;
   let newQuantity = 1;
 
@@ -103,7 +106,8 @@ exports.postCart = (req, res, next) => {
       })
     })
     .then(() => {
-      res.redirect('/cart');
+      res.json({ message: "Sucess"})
+      // res.redirect('/cart');
     })
     .catch(err => console.log(err))
 
@@ -128,12 +132,16 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then(products => {
       let product;
       if(products.length > 0){
+        console.log('JSON.products>>>>>', JSON.stringify(products))
         product = products[0];
+        console.log('JSON.', JSON.stringify(product))
+        return product.cartItem.destroy();
       }
-      return fetchedCart.destroy(product)
     })
-    .then(() => res.redirect('/cart'))
-    .catch(err => console.log(err))
+    // .then(() => res.json('/cart'))
+    // .catch(err => console.log(err))
+    .then(() => res.json({message: 'Successfully Deleted'}))
+    .catch(error => res.json({error: error, message: 'Failure'}))
   // Product.findById(prodId, product => {
   //   Cart.deleteProduct(prodId, product.price);
   //   res.redirect('/cart');
